@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: threat-intel-sync
+spec:
+  schedule: "*/30 * * * *"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          nodeSelector:
+            workload: analysis
+          containers:
+            - name: sync
+              image: curlimages/curl:8.10.1
+              command:
+                - /bin/sh
+                - -c
+              args:
+                - |
+                  echo "Synchronize MISP or OTX feeds here";
+                  date -u
+              env:
+                - name: MISP_URL
+                  value: https://misp.example.local
+                - name: OTX_URL
+                  value: https://otx.alienvault.com

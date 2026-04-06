@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wazuh-manager-headless
+spec:
+  clusterIP: None
+  selector:
+    app: wazuh-manager
+  ports:
+    - name: registration
+      port: 1515
+      targetPort: 1515
+    - name: logs
+      port: 1514
+      targetPort: 1514
+    - name: api
+      port: 55000
+      targetPort: 55000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wazuh-ingest
+spec:
+  type: NodePort
+  selector:
+    app: wazuh-manager
+  ports:
+    - name: logs
+      port: 1514
+      targetPort: 1514
+      nodePort: 31514
+    - name: registration
+      port: 1515
+      targetPort: 1515
+      nodePort: 31515
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: wazuh-manager
+spec:
+  serviceName: wazuh-manager-headless
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wazuh-manager
+  template:
+    metadata:
+      labels:
+        app: wazuh-manager
+    spec:
+      nodeSelector:
+        workload: analysis
+      containers:
+        - name: manager
+          image: wazuh/wazuh-manager:4.8.0
+          ports:
+            - containerPort: 1514
+              name: logs
+            - containerPort: 1515
+              name: registration
+            - containerPort: 55000
+              name: api
+          resources:
+            requests:
+              cpu: "1"
+              memory: 2Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+          volumeMounts:
+            - name: manager-data
+              mountPath: /var/ossec/data
+  volumeClaimTemplates:
+    - metadata:
+        name: manager-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: gp3-encrypted
+        resources:
+          requests:
+            storage: 50Gi

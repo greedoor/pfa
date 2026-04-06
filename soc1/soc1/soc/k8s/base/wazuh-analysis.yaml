@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wazuh-analysis
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wazuh-analysis
+  template:
+    metadata:
+      labels:
+        app: wazuh-analysis
+    spec:
+      nodeSelector:
+        workload: analysis
+      containers:
+        - name: analysis
+          image: wazuh/wazuh-manager:4.8.0
+          ports:
+            - containerPort: 1514
+          env:
+            - name: WAZUH_CLUSTER_ROLE
+              value: worker
+          resources:
+            requests:
+              cpu: "500m"
+              memory: 1Gi
+            limits:
+              cpu: "1"
+              memory: 2Gi

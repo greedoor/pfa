@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wazuh-indexer-headless
+spec:
+  clusterIP: None
+  selector:
+    app: wazuh-indexer
+  ports:
+    - name: https
+      port: 9200
+      targetPort: 9200
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: wazuh-indexer
+spec:
+  serviceName: wazuh-indexer-headless
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wazuh-indexer
+  template:
+    metadata:
+      labels:
+        app: wazuh-indexer
+    spec:
+      nodeSelector:
+        workload: storage
+      tolerations:
+        - key: dedicated
+          operator: Equal
+          value: storage
+          effect: NoSchedule
+      containers:
+        - name: indexer
+          image: wazuh/wazuh-indexer:4.8.0
+          ports:
+            - containerPort: 9200
+              name: https
+          env:
+            - name: cluster.name
+              value: soc-wazuh-indexer
+            - name: node.name
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: discovery.seed_hosts
+              value: wazuh-indexer-0.wazuh-indexer-headless.soc.svc.cluster.local,wazuh-indexer-1.wazuh-indexer-headless.soc.svc.cluster.local,wazuh-indexer-2.wazuh-indexer-headless.soc.svc.cluster.local
+            - name: cluster.initial_master_nodes
+              value: wazuh-indexer-0,wazuh-indexer-1,wazuh-indexer-2
+            - name: network.host
+              value: "0.0.0.0"
+          resources:
+            requests:
+              cpu: "1"
+              memory: 2Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/wazuh-indexer
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: gp3-encrypted
+        resources:
+          requests:
+            storage: 100Gi

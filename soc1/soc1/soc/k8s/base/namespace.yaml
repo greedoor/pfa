@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: soc
+  labels:
+    project: soc
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: soc-quota
+spec:
+  hard:
+    requests.cpu: "20"
+    requests.memory: 64Gi
+    limits.cpu: "40"
+    limits.memory: 128Gi
+    persistentvolumeclaims: "20"
