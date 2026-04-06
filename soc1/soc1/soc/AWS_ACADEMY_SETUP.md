@@ -1,6 +1,12 @@
 # AWS Academy Setup for the SOC EKS Project
 
-This project supports AWS Academy style lab environments where IAM creation is often restricted. If your lab already gives you a reusable role such as `LabRole` or `voclabs-LabRole`, reuse it in `terraform.tfvars`.
+This project now ships with AWS Academy-friendly defaults in [terraform.tfvars](c:/Users/User/Downloads/soc1/soc1/soc/terraform.tfvars). It avoids the most common lab blockers:
+
+- no OIDC provider creation
+- no VPC Flow Logs IAM role creation
+- smaller node sizes
+- a single NAT gateway
+- a lightweight Kubernetes overlay for demos
 
 ## 1. Open the AWS Academy Console
 
@@ -33,15 +39,18 @@ create_oidc_provider           = false
 
 ## 4. Variables You Will Usually Keep
 
-The defaults already reflect the project brief:
+The defaults are already adapted for AWS Academy:
 
 ```hcl
 management_public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
 soc_private_subnet_cidrs       = ["10.0.11.0/24", "10.0.12.0/24", "10.0.13.0/24"]
 workplace_private_subnet_cidrs = ["10.0.21.0/24", "10.0.22.0/24", "10.0.23.0/24"]
-desired_worker_nodes           = 3
-max_worker_nodes               = 10
-desired_storage_nodes          = 3
+desired_worker_nodes           = 2
+desired_storage_nodes          = 1
+worker_instance_type           = "t3.medium"
+storage_instance_type          = "t3.medium"
+enable_vpc_flow_logs           = false
+single_nat_gateway             = true
 ```
 
 ## 5. Run Terraform
@@ -61,10 +70,11 @@ After apply succeeds:
 ```bash
 aws eks update-kubeconfig --region us-east-1 --name soc-eks-cluster
 kubectl get nodes
+kubectl apply -k k8s/aws-academy
 ```
 
 ## Notes
 
-- If `terraform plan` fails on IAM or OIDC creation, confirm that `create_oidc_provider = false`.
-- If your lab forbids certain EC2 instance types, change `worker_instance_type` or `storage_instance_type` in `terraform.tfvars`.
+- If `terraform plan` fails on IAM creation, confirm that `enable_vpc_flow_logs = false` and `create_oidc_provider = false`.
+- If your lab forbids certain EC2 instance types, keep both node groups on `t3.medium`.
 - If Terraform is not installed in your lab machine, install it before validation and deployment.

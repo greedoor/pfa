@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wazuh-indexer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wazuh-indexer
+  template:
+    metadata:
+      labels:
+        app: wazuh-indexer
+    spec:
+      nodeSelector:
+        workload: storage
+      tolerations:
+        - key: dedicated
+          operator: Equal
+          value: storage
+          effect: NoSchedule
+      containers:
+        - name: indexer
+          image: wazuh/wazuh-indexer:4.8.0
+          ports:
+            - containerPort: 9200
+              name: https
+          env:
+            - name: discovery.type
+              value: single-node
+            - name: network.host
+              value: "0.0.0.0"
+          resources:
+            requests:
+              cpu: "500m"
+              memory: 1Gi
+            limits:
+              cpu: "1"
+              memory: 2Gi
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/wazuh-indexer
+      volumes:
+        - name: data
+          emptyDir: {}

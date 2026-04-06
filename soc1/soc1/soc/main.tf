@@ -32,6 +32,7 @@ module "vpc" {
   cluster_name                   = var.cluster_name
   enable_vpc_flow_logs           = var.enable_vpc_flow_logs
   flow_logs_retention_days       = var.flow_logs_retention_days
+  single_nat_gateway             = var.single_nat_gateway
 }
 
 module "eks" {

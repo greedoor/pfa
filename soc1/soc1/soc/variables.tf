@@ -159,3 +159,9 @@ variable "flow_logs_retention_days" {
   type        = number
   default     = 30
 }
+
+variable "single_nat_gateway" {
+  description = "Use a single shared NAT gateway to reduce AWS Academy cost and quota usage."
+  type        = bool
+  default     = false
+}

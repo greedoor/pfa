@@ -6,6 +6,7 @@ locals {
   management_azs = slice(data.aws_availability_zones.available.names, 0, length(var.management_public_subnet_cidrs))
   soc_azs        = slice(data.aws_availability_zones.available.names, 0, length(var.soc_private_subnet_cidrs))
   workplace_azs  = slice(data.aws_availability_zones.available.names, 0, length(var.workplace_private_subnet_cidrs))
+  nat_gateway_count = var.single_nat_gateway ? 1 : length(var.management_public_subnet_cidrs)
 }
 
 resource "aws_vpc" "main" {
@@ -68,7 +69,7 @@ resource "aws_subnet" "workplace_private" {
 }
 
 resource "aws_eip" "nat" {
-  count  = length(var.management_public_subnet_cidrs)
+  count  = local.nat_gateway_count
   domain = "vpc"
 
   tags = {
@@ -79,7 +80,7 @@ resource "aws_eip" "nat" {
 }
 
 resource "aws_nat_gateway" "main" {
-  count         = length(var.management_public_subnet_cidrs)
+  count         = local.nat_gateway_count
   allocation_id = aws_eip.nat[count.index].id
   subnet_id     = aws_subnet.management_public[count.index].id
 

@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: soc
+resources:
+  - ../base
+  - wazuh-indexer-academy.yaml
+  - wazuh-manager-academy.yaml
+patchesStrategicMerge:
+  - delete-wazuh-indexer-statefulset.yaml
+  - delete-wazuh-manager-statefulset.yaml
+  - scale-analysis.yaml
+  - scale-dashboard.yaml
+  - scale-observability.yaml
+  - patch-security-controls.yaml
+  - patch-namespace-quota.yaml

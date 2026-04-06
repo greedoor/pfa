@@ -18,6 +18,14 @@ This folder contains a reference Kubernetes implementation of the SOC components
 
 ## Apply
 
+For AWS Academy:
+
+```bash
+kubectl apply -k k8s/aws-academy
+```
+
+For the fuller reference topology:
+
 ```bash
 kubectl apply -k k8s/base
 ```
@@ -27,3 +35,4 @@ kubectl apply -k k8s/base
 - The manifests are a project-aligned baseline intended to match the architecture in the report.
 - Production Wazuh deployments usually require vendor-specific tuning, certificates, credentials, and storage sizing adjustments.
 - The node affinity model assumes the Terraform-managed EKS node groups expose the labels `workload=analysis` and `workload=storage`.
+- The `aws-academy` overlay is the recommended starting point for constrained lab accounts.

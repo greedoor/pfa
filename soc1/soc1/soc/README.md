@@ -70,6 +70,16 @@ The main variables are pre-filled in `terraform.tfvars`:
 - `cluster_endpoint_public_access`
 - `cluster_endpoint_private_access`
 
+## AWS Academy Ready Defaults
+
+The checked-in [terraform.tfvars](c:/Users/User/Downloads/soc1/soc1/soc/terraform.tfvars) is now tuned for AWS Academy:
+
+- `t3.medium` nodes instead of larger instance types
+- `2` analysis nodes and `1` storage node by default
+- `single_nat_gateway = true` to reduce cost
+- `enable_vpc_flow_logs = false` to avoid extra IAM requirements
+- `create_oidc_provider = false` for restricted lab accounts
+
 ## Deploy the AWS Infrastructure
 
 1. Install Terraform, AWS CLI, and kubectl.
@@ -92,11 +102,13 @@ aws eks update-kubeconfig --region us-east-1 --name soc-eks-cluster
 
 After the cluster is ready:
 
+Use the AWS Academy overlay first:
+
 ```bash
-kubectl apply -k k8s/base
+kubectl apply -k k8s/aws-academy
 ```
 
-The manifests provide a reference deployment topology for the SOC components. In a production environment, the same topology should be implemented with the official vendor Helm charts, real TLS certificates, secrets management, and application-specific configuration values.
+The `aws-academy` overlay reduces replicas and replaces persistent Wazuh storage with lighter ephemeral storage so the project can be demonstrated in a constrained lab account. The `k8s/base` manifests remain the fuller reference topology.
 
 ## Outputs
 
@@ -117,3 +129,4 @@ Useful Terraform outputs:
 - AWS account-level validation was not possible from this workspace.
 - The Kubernetes manifests are designed as a deployable reference baseline, not a fully tuned production Wazuh platform.
 - If your lab environment blocks IAM OIDC creation, keep `create_oidc_provider = false`.
+- For AWS Academy, prefer `kubectl apply -k k8s/aws-academy` before trying `k8s/base`.

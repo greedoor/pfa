@@ -8,20 +8,21 @@ soc_private_subnet_cidrs       = ["10.0.11.0/24", "10.0.12.0/24", "10.0.13.0/24"
 workplace_private_subnet_cidrs = ["10.0.21.0/24", "10.0.22.0/24", "10.0.23.0/24"]
 cluster_name                   = "soc-eks-cluster"
 kubernetes_version             = "1.29"
-desired_worker_nodes           = 3
-min_worker_nodes               = 3
-max_worker_nodes               = 10
-worker_instance_type           = "c5.large"
-worker_disk_size               = 50
-desired_storage_nodes          = 3
-min_storage_nodes              = 3
-max_storage_nodes              = 6
-storage_instance_type          = "t3.large"
-storage_disk_size              = 150
+desired_worker_nodes           = 2
+min_worker_nodes               = 2
+max_worker_nodes               = 4
+worker_instance_type           = "t3.medium"
+worker_disk_size               = 30
+desired_storage_nodes          = 1
+min_storage_nodes              = 1
+max_storage_nodes              = 2
+storage_instance_type          = "t3.medium"
+storage_disk_size              = 50
 cluster_endpoint_public_access = true
 cluster_endpoint_private_access = true
-enable_vpc_flow_logs           = true
+enable_vpc_flow_logs           = false
 flow_logs_retention_days       = 30
+single_nat_gateway             = true
 
 # AWS Academy Labs: add your IAM role ARNs below.
 # Leave empty ("") to create new roles if your account allows IAM creation.

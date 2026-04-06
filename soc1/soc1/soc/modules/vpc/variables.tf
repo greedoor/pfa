@@ -37,3 +37,8 @@ variable "flow_logs_retention_days" {
   description = "Retention period in days for VPC Flow Logs"
   type        = number
 }
+
+variable "single_nat_gateway" {
+  description = "Whether to use a single NAT gateway shared by all private subnets"
+  type        = bool
+}
