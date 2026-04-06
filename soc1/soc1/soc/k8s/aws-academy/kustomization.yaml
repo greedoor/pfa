@@ -8,6 +8,7 @@ resources:
 patchesStrategicMerge:
   - delete-wazuh-indexer-statefulset.yaml
   - delete-wazuh-manager-statefulset.yaml
+  - delete-falco-daemonset.yaml
   - scale-analysis.yaml
   - scale-dashboard.yaml
   - scale-observability.yaml

@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: soc
+resources:
+  - ../aws-academy
+patchesStrategicMerge:
+  - delete-shuffle-service.yaml
+  - delete-shuffle-deployment.yaml
+  - delete-prometheus-configmap.yaml
+  - delete-prometheus-service.yaml
+  - delete-prometheus-deployment.yaml
+  - delete-grafana-service.yaml
+  - delete-grafana-deployment.yaml
+  - delete-falco-daemonset.yaml
+  - delete-cti-cronjob.yaml
+  - delete-soc-ui-ingress.yaml

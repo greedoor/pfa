@@ -8,6 +8,7 @@ This overlay is the version you should deploy first in AWS Academy.
 - replaces `Wazuh Indexer` and `Wazuh Manager` persistent storage with `emptyDir`
 - reduces deployment replicas and resource requests
 - lowers the `HPA` range to `1..2`
+- removes `Falco`, which commonly fails in AWS Academy and minimal EKS setups without the full official driver installation
 - keeps the same service names so the rest of the stack still connects
 
 ## Apply

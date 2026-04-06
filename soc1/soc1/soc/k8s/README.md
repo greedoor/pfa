@@ -24,6 +24,12 @@ For AWS Academy:
 kubectl apply -k k8s/aws-academy
 ```
 
+For only Wazuh:
+
+```bash
+kubectl apply -k k8s/wazuh-only
+```
+
 For the fuller reference topology:
 
 ```bash
